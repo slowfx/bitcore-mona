@@ -1,6 +1,29 @@
 Bitcore for Monacoin
 =======
 
+Hi, You don't need to use for monacoin.
+You can use the original bitcore for monacoin like this.
+
+var bitcore = require('bitcore');
+    var Networks = bitcore.Networks;
+    Networks.livenet = Networks.add({
+		name: 'livenet-mona',
+		alias: 'mainnet',
+		pubkeyhash: 0x32,
+		privatekey: 0xb2, // wif
+		scripthash: 0x05,
+		xpubkey: 0x0488b21e,
+		xprivkey: 0x0488ade4,
+		networkMagic: 0xfbc0b6db, // f9+2 be+2 b4+2 d9+2
+		port: 9401,
+		dnsSeeds: []
+	});
+	
+	Thanks,
+	
+
+
+
 [![NPM Package](https://img.shields.io/npm/v/bitcore.svg?style=flat-square)](https://www.npmjs.org/package/bitcore)
 [![Build Status](https://img.shields.io/travis/bitpay/bitcore.svg?branch=master&style=flat-square)](https://travis-ci.org/bitpay/bitcore)
 [![Coverage Status](https://img.shields.io/coveralls/bitpay/bitcore.svg?style=flat-square)](https://coveralls.io/r/bitpay/bitcore)
