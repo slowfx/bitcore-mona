@@ -4,6 +4,7 @@ Bitcore for Monacoin
 Hi, You don't need to use for monacoin.
 You can use the original bitcore for monacoin like this.
 
+```javascript
 var bitcore = require('bitcore');
     var Networks = bitcore.Networks;
     Networks.livenet = Networks.add({
@@ -18,6 +19,7 @@ var bitcore = require('bitcore');
 		port: 9401,
 		dnsSeeds: []
 	});
+	```
 	
 	Thanks,
 	
