@@ -1,5 +1,4 @@
-Bitcore for Monacoin
-=======
+## Bitcore for Monacoin
 
 Hi, You don't need to use this fork for monacoin.
 You can use the original bitcore for monacoin like this.
