@@ -202,7 +202,9 @@ describe('Transaction', function() {
       transaction.outputs[1].satoshis.should.equal(40000);
       transaction.outputs[1].script.toString()
         .should.equal(Script.fromAddress(changeAddress).toString());
-      transaction.getChangeOutput().script.should.deep.equal(Script.fromAddress(changeAddress));
+      var actual = transaction.getChangeOutput().script.toString();
+      var expected = Script.fromAddress(changeAddress).toString();
+      actual.should.equal(expected);
     });
     it('accepts a P2SH address for change', function() {
       var transaction = new Transaction()
@@ -256,6 +258,22 @@ describe('Transaction', function() {
         .sign(privateKey);
       transaction.outputs.length.should.equal(2);
       transaction.outputs[1].satoshis.should.equal(10000);
+    });
+    it('fee per kb can be set up manually', function() {
+      var inputs = _.map(_.range(10), function(i) {
+        var utxo = _.clone(simpleUtxoWith100000Satoshis);
+        utxo.outputIndex = i;
+        return utxo;
+      });
+      var transaction = new Transaction()
+        .from(inputs)
+        .to(toAddress, 950000)
+        .feePerKb(8000)
+        .change(changeAddress)
+        .sign(privateKey);
+      transaction._estimateSize().should.be.within(1000, 1999);
+      transaction.outputs.length.should.equal(2);
+      transaction.outputs[1].satoshis.should.equal(34000);
     });
     it('if satoshis are invalid', function() {
       var transaction = new Transaction()
@@ -406,7 +424,9 @@ describe('Transaction', function() {
         .fee(10000000);
 
       expect(function() {
-        return transaction.serialize({disableMoreOutputThanInput: true});
+        return transaction.serialize({
+          disableMoreOutputThanInput: true
+        });
       }).to.throw(errors.Transaction.FeeError.TooLarge);
     });
     describe('skipping checks', function() {
@@ -812,15 +832,20 @@ describe('Transaction', function() {
 
     it('fails if the provided function does not work as expected', function() {
       var sorting = function(array) {
-        return [];
+        return [array[0], array[1], array[2]];
       };
       expect(function() {
         transaction.sortOutputs(sorting);
       }).to.throw(errors.Transaction.InvalidSorting);
     });
 
-
-
+    it('shuffle without change', function() {
+      var tx = new Transaction(transaction.toObject()).to(toAddress, half);
+      expect(tx.getChangeOutput()).to.be.null;
+      expect(function() {
+        tx.shuffleOutputs();
+      }).to.not.throw(errors.Transaction.InvalidSorting);
+    })
   });
 
   describe('clearOutputs', function() {

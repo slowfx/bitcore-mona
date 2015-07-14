@@ -233,24 +233,48 @@ describe('Script', function() {
 
   describe('#isPublicKeyHashIn', function() {
 
-    it('should identify this known pubkeyhashin', function() {
+    it('should identify this known pubkeyhashin (uncompressed pubkey version)', function() {
       Script('73 0x3046022100bb3c194a30e460d81d34be0a230179c043a656f67e3c5c8bf47eceae7c4042ee0221008bf54ca11b2985285be0fd7a212873d243e6e73f5fad57e8eb14c4f39728b8c601 65 0x04e365859b3c78a8b7c202412b949ebca58e147dba297be29eee53cd3e1d300a6419bc780cc9aec0dc94ed194e91c8f6433f1b781ee00eac0ead2aae1e8e0712c6').isPublicKeyHashIn().should.equal(true);
     });
 
-    it('should identify this known pubkeyhashin starting with 0x02', function() {
+    it('should identify this known pubkeyhashin (hybrid pubkey version w/06)', function() {
+      Script('73 0x3046022100bb3c194a30e460d81d34be0a230179c043a656f67e3c5c8bf47eceae7c4042ee0221008bf54ca11b2985285be0fd7a212873d243e6e73f5fad57e8eb14c4f39728b8c601 65 0x06e365859b3c78a8b7c202412b949ebca58e147dba297be29eee53cd3e1d300a6419bc780cc9aec0dc94ed194e91c8f6433f1b781ee00eac0ead2aae1e8e0712c6').isPublicKeyHashIn().should.equal(true);
+    });
+
+    it('should identify this known pubkeyhashin (hybrid pubkey version w/07)', function() {
+      Script('73 0x3046022100bb3c194a30e460d81d34be0a230179c043a656f67e3c5c8bf47eceae7c4042ee0221008bf54ca11b2985285be0fd7a212873d243e6e73f5fad57e8eb14c4f39728b8c601 65 0x07e365859b3c78a8b7c202412b949ebca58e147dba297be29eee53cd3e1d300a6419bc780cc9aec0dc94ed194e91c8f6433f1b781ee00eac0ead2aae1e8e0712c6').isPublicKeyHashIn().should.equal(true);
+    });
+
+    it('should identify this known pubkeyhashin (compressed pubkey w/ 0x02)', function() {
       Script('73 0x3046022100bb3c194a30e460d81d34be0a230179c043a656f67e3c5c8bf47eceae7c4042ee0221008bf54ca11b2985285be0fd7a212873d243e6e73f5fad57e8eb14c4f39728b8c601 21 0x02aec6b86621e7fef63747fbfd6a6e7d54c8e1052044ef2dd2c5e46656ef1194d4').isPublicKeyHashIn().should.equal(true);
     });
 
-    it('should identify this known pubkeyhashin starting with 0x03', function() {
+    it('should identify this known pubkeyhashin (compressed pubkey w/ 0x03)', function() {
       Script('73 0x3046022100bb3c194a30e460d81d34be0a230179c043a656f67e3c5c8bf47eceae7c4042ee0221008bf54ca11b2985285be0fd7a212873d243e6e73f5fad57e8eb14c4f39728b8c601 21 0x03e724d93c4fda5f1236c525de7ffac6c5f1f72b0f5cdd1fc4b4f5642b6d055fcc').isPublicKeyHashIn().should.equal(true);
     });
 
-    it('should identify this known non-pubkeyhashin', function() {
+    it('should identify this known non-pubkeyhashin (bad ops length)', function() {
       Script('73 0x3046022100bb3c194a30e460d81d34be0a230179c043a656f67e3c5c8bf47eceae7c4042ee0221008bf54ca11b2985285be0fd7a212873d243e6e73f5fad57e8eb14c4f39728b8c601 65 0x04e365859b3c78a8b7c202412b949ebca58e147dba297be29eee53cd3e1d300a6419bc780cc9aec0dc94ed194e91c8f6433f1b781ee00eac0ead2aae1e8e0712c6 OP_CHECKSIG').isPublicKeyHashIn().should.equal(false);
     });
 
     it('should identify this known pubkey', function() {
       Script('70 0x3043021f336721e4343f67c835cbfd465477db09073dc38a936f9c445d573c1c8a7fdf022064b0e3cb6892a9ecf870030e3066bc259e1f24841c9471d97f9be08b73f6530701 33 0x0370b2e1dcaa8f51cb0ead1221dd8cb31721502b3b5b7d4b374d263dfec63a4369').isPublicKeyHashIn().should.equal(true);
+    });
+
+    it('should identify this known non-pubkeyhashin (bad version)', function() {
+      Script('70 0x3043021f336721e4343f67c835cbfd465477db09073dc38a936f9c445d573c1c8a7fdf022064b0e3cb6892a9ecf870030e3066bc259e1f24841c9471d97f9be08b73f6530701 33 0x1270b2e1dcaa8f51cb0ead1221dd8cb31721502b3b5b7d4b374d263dfec63a4369').isPublicKeyHashIn().should.equal(false);
+    });
+
+    it('should identify this known non-pubkeyhashin (bad signature version)', function() {
+      Script('70 0x4043021f336721e4343f67c835cbfd465477db09073dc38a936f9c445d573c1c8a7fdf022064b0e3cb6892a9ecf870030e3066bc259e1f24841c9471d97f9be08b73f6530701 33 0x0370b2e1dcaa8f51cb0ead1221dd8cb31721502b3b5b7d4b374d263dfec63a4369').isPublicKeyHashIn().should.equal(false);
+    });
+
+    it('should identify this known non-pubkeyhashin (no public key)', function() {
+      Script('70 0x3043021f336721e4343f67c835cbfd465477db09073dc38a936f9c445d573c1c8a7fdf022064b0e3cb6892a9ecf870030e3066bc259e1f24841c9471d97f9be08b73f6530701 OP_CHECKSIG').isPublicKeyHashIn().should.equal(false);
+    });
+
+    it('should identify this known non-pubkeyhashin (no signature)', function() {
+      Script('OP_DROP OP_CHECKSIG').isPublicKeyHashIn().should.equal(false);
     });
 
   });
@@ -471,7 +495,7 @@ describe('Script', function() {
   });
 
   describe('#buildMultisigOut', function() {
-    var pubkey_hexs = [
+    var pubKeyHexes = [
       '022df8750480ad5b26950b25c7ba79d3e37d75f640f8e5d9bcd5b150a0f85014da',
       '03e3818b65bcc73a7d64064106a859cc1a5a728c4345ff0b641209fba0d90de6e9',
       '021f2f6e1e50cb6a953935c3601284925decd3fd21bc445712576873fb8c6ebc18',
@@ -479,7 +503,7 @@ describe('Script', function() {
       '036a98a36aa7665874b1ba9130bc6d318e52fd3bdb5969532d7fc09bf2476ff842',
       '033aafcbead78c08b0e0aacc1b0cdb40702a7c709b660bebd286e973242127e15b',
     ];
-    var sortkeys = pubkey_hexs.slice(0, 3).map(PublicKey);
+    var sortkeys = pubKeyHexes.slice(0, 3).map(PublicKey);
     it('should create sorted script by default', function() {
       var s = Script.buildMultisigOut(sortkeys, 2);
       s.toString().should.equal('OP_2 33 0x021f2f6e1e50cb6a953935c3601284925decd3fd21bc445712576873fb8c6ebc18 33 0x022df8750480ad5b26950b25c7ba79d3e37d75f640f8e5d9bcd5b150a0f85014da 33 0x03e3818b65bcc73a7d64064106a859cc1a5a728c4345ff0b641209fba0d90de6e9 OP_3 OP_CHECKMULTISIG');
@@ -501,7 +525,7 @@ describe('Script', function() {
       s.isMultisigOut().should.equal(true);
     });
     var test_mn = function(m, n) {
-      var pubkeys = pubkey_hexs.slice(0, n).map(PublicKey);
+      var pubkeys = pubKeyHexes.slice(0, n).map(PublicKey);
       var s = Script.buildMultisigOut(pubkeys, m);
       s.isMultisigOut().should.equal(true);
     };
@@ -775,5 +799,46 @@ describe('Script', function() {
     });
   });
 
-
+  describe('#getSignatureOperationsCount', function() {
+    // comes from bitcoind src/test/sigopcount_tests
+    // only test calls to function with boolean param, not signature ref param
+    var pubKeyHexes = [
+      '022df8750480ad5b26950b25c7ba79d3e37d75f640f8e5d9bcd5b150a0f85014da',
+      '03e3818b65bcc73a7d64064106a859cc1a5a728c4345ff0b641209fba0d90de6e9',
+      '021f2f6e1e50cb6a953935c3601284925decd3fd21bc445712576873fb8c6ebc18',
+    ];
+    it('should return zero for empty scripts', function() {
+      Script().getSignatureOperationsCount(false).should.equal(0);
+      Script().getSignatureOperationsCount(true).should.equal(0);
+    });
+    it('should handle multi-sig multisig scripts from string', function() {
+      var s1 = 'OP_1 01 FF OP_2 OP_CHECKMULTISIG';
+      Script(s1).getSignatureOperationsCount(true).should.equal(2);
+      s1 += ' OP_IF OP_CHECKSIG OP_ENDIF';
+      Script(s1).getSignatureOperationsCount(true).should.equal(3);
+      Script(s1).getSignatureOperationsCount(false).should.equal(21);
+    });
+    it('should handle multi-sig-out scripts from utility function', function() {
+      var sortKeys = pubKeyHexes.slice(0, 3).map(PublicKey);
+      var s2 = Script.buildMultisigOut(sortKeys, 1);
+      Script(s2).getSignatureOperationsCount(true).should.equal(3);
+      Script(s2).getSignatureOperationsCount(false).should.equal(20);
+    });
+    it('should handle P2SH-multisig-in scripts from utility', function() {
+      // create a well-formed signature, does not need to match pubkeys
+      var signature = bitcore.crypto.Signature.fromString('30060201FF0201FF');
+      var signatures = [ signature.toBuffer() ];
+      var p2sh = Script.buildP2SHMultisigIn(pubKeyHexes, 1, signatures, {});
+      p2sh.getSignatureOperationsCount(true).should.equal(0);
+      p2sh.getSignatureOperationsCount(false).should.equal(0);
+    });
+    it('should default the one and only argument to true', function() {
+      var s1 = 'OP_1 01 FF OP_2 OP_CHECKMULTISIG';
+      var trueCount = Script(s1).getSignatureOperationsCount(true);
+      var falseCount = Script(s1).getSignatureOperationsCount(false);
+      var defaultCount = Script(s1).getSignatureOperationsCount();
+      trueCount.should.not.equal(falseCount);
+      trueCount.should.equal(defaultCount);
+    });
+  });
 });
